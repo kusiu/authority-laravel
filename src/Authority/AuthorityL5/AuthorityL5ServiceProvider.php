@@ -1,26 +1,26 @@
 <?php
-namespace Authority\AuthorityL4;
+
+namespace Authority\AuthorityL5;
 
 use Authority\Authority;
 use Illuminate\Support\ServiceProvider;
 
-class AuthorityL4ServiceProvider extends ServiceProvider
-{
+class AuthorityL5ServiceProvider extends ServiceProvider {
     
     /**
      * Register the service provider.
      *
      * @return void
      */
-    public function register(){
-        $this->package('machuga/authority-l4');
-
+    public function register() {
         $this->app['authority'] = $this->app->share(function($app){
             $user = $app['auth']->user();
+            
             $authority = new Authority($user);
-            $fn = $app['config']->get('authority-l4::initialize', null);
+            
+            $fn = $app['config']->get('authority.initialize', null);
 
-            if($fn) {
+            if ($fn) {
                 $fn($authority);
             }
 

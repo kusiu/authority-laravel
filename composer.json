@@ -2,7 +2,7 @@
     "name": "stayallive/authority-l5",
     "type": "library",
     "description": "A simple and flexible authorization system for PHP",
-    "keywords": ["laravel", "laravel 4", "authentication", "authorization"],
+    "keywords": ["laravel", "laravel 5", "authentication", "authorization"],
     "homepage": "https://github.com/machuga/authority-l4",
     "authors": [
         {
@@ -32,11 +32,8 @@
         "mockery/mockery": "0.7.*"
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
         "psr-0": {
-            "Authority\\AuthorityL4": "src/"
+            "Authority\\AuthorityL5": "src/"
         }
     },
     "minimum-stability": "stable",
