@@ -1,34 +1,48 @@
-# Authority-L4
-## A simple and flexible authorization system for Laravel 4
+# Authority-L5
+
+This is an fork from the [authority-l4](https://github.com/machuga/authority-l4) package by Machuga.
+
+This also references a fork for the [authority](https://github.com/machuga/authority) package by Machuga because the original requires Laravel 4 components.
+
+## A simple and flexible authorization system for Laravel 5
 
 ### Installation via Composer
+
 Add Authority to your composer.json file to require Authority
 
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/stayallive/authority"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/stayallive/authority-l5"
+        }
+    ],
 	require : {
-		"laravel/framework": "4.0.*",
-        "machuga/authority-l4" : "dev-master"
+		"laravel/framework": "5.0.*",
+        "stayallive/authority-l5" : "2.4.*"
     }
 
 Now update Composer
 
 	composer update
 
-The last **required** step is to add the service provider to `app/config/app.php`
+The last **required** step is to add the service provider to `config/app.php`
 
 ```php	
-    'Authority\AuthorityL4\AuthorityL4ServiceProvider',
+    'Authority\AuthorityL5\AuthorityL5ServiceProvider',
 ```
 
 Congratulations, you have successfully installed Authority.  However, we have also included some other configuration options for your convenience.
-
-
 
 ### Additional (optional) Configuration Options
 
 ##### Add the alias (facade) to your Laravel app config file.
 
 ```php
-    'Authority' => 'Authority\AuthorityL4\Facades\Authority',
+    'Authority' => 'Authority\AuthorityL5\Facades\Authority',
 ```
 
 This will allow you to access the Authority class through the static interface you are used to with Laravel components.
@@ -40,25 +54,26 @@ This will allow you to access the Authority class through the static interface y
 ##### Publish the Authority default configuration file
 
 ```php
-	php artisan config:publish machuga/authority-l4
+	php artisan vendor:publish
 ```
 
-This will place a copy of the configuration file at `app/config/packages/machuga/authority-l4`.  The config file includes an 'initialize' function, which is a great place to setup your rules and aliases.
+This will place a copy of the configuration file at `config/authority.php`.  The config file includes an 'initialize' function, which is a great place to setup your rules and aliases.
 
 ```php
-	//app/config/packages/machuga/authority-l4
+	// config/authority.php
+    <?php
 
 	return array(
 
 		'initialize' => function($authority) {
 			$user = $authority->getCurrentUser();
 
-			//action aliases
+			// action aliases
 			$authority->addAlias('manage', array('create', 'read', 'update', 'delete'));
         	$authority->addAlias('moderate', array('read', 'update', 'delete'));
 
-        	//an example using the `hasRole` function, see below examples for more details
-        	if($user->hasRole('admin')){
+        	// an example using the `hasRole` function, see below examples for more details
+        	if ($user->hasRole('admin')){
         		$authority->allow('manage', 'all');
 			}
 		}
@@ -70,10 +85,16 @@ This will place a copy of the configuration file at `app/config/packages/machuga
 
 We have provided a basic table structure to get you started in creating your roles and permissions.
 
-Run the Authority migrations
+Publish them to your migrations directory or copy them directly.
 
 ```php
-	php artisan migrate --package="machuga/authority-l4"
+	php artisan vendor:publish
+```
+
+Run the migrations
+
+```php
+	php artisan migrate
 ```
 
 This will create the following tables
@@ -85,57 +106,65 @@ This will create the following tables
 To utilize these tables, you can add the following methods to your `User` model.  You will also need to create Role and Permission Model stubs.
 
 ```php
-
-	//app/models/User.php
+	// app/User.php
+    
 	public function roles() {
-        return $this->belongsToMany('Role');
+        return $this->belongsToMany('App\Authority\Role');
     }
 
     public function permissions() {
-        return $this->hasMany('Permission');
+        return $this->hasMany('App\Authority\Permission');
     }
 
 	public function hasRole($key) {
-		foreach($this->roles as $role){
-			if($role->name === $key)
-			{
+		foreach ($this->roles as $role) {
+			if ($role->name === $key) {
 				return true;
 			}
 		}
+        
 		return false;
 	}
 
-	//app/models/Role.php
-	class Role extends Eloquent {}
+	// app/Authority/Role.php
+    <?php
+    
+    use Illuminate\Database\Eloquent\Model;
+    
+	class Role extends Model {}
 
-	//app/models/Permission.php
-	class Permission extends Eloquent {}
+	// app/Authority/Permission.php
+    <?php
+    
+    use Illuminate\Database\Eloquent\Model;
+    
+	class Permission extends Model {}
 ```
 
 Lastly, in your Authority config file which you copied over in the previous configuration step.  You can add some rules:
 
 ```php
-	<?php
-	//app/config/packages/machuga/authority-l4
-
+	// config/authority.php
+    <?php
+    
 	return array(
 
 		'initialize' => function($authority) {
 
 			$user = $authority->getCurrentUser();
 
-			//action aliases
+			// action aliases
 			$authority->addAlias('manage', array('create', 'read', 'update', 'delete'));
         	$authority->addAlias('moderate', array('read', 'update', 'delete'));
 
-        	//an example using the `hasRole` function, see below examples for more details
-        	if($user->hasRole('admin')) {
+        	// an example using the `hasRole` function, see below examples for more details
+        	if ($user->hasRole('admin')) {
         		$authority->allow('manage', 'all');
 			}
 
 			// loop through each of the users permissions, and create rules
-			foreach($user->permissions as $perm) {
-				if($perm->type == 'allow') {
+			foreach ($user->permissions as $perm) {
+				if ($perm->type == 'allow') {
 					$authority->allow($perm->action, $perm->resource);
 				} else {
 					$authority->deny($perm->action, $perm->resource);
@@ -149,14 +178,14 @@ Lastly, in your Authority config file which you copied over in the previous conf
 ## General Usage
 
 ```php
-	//If you added the alias to `app/config/app.php` then you can access Authority, from any Controller, View, or anywhere else in your Laravel app like so:
-	if( Authority::can('create', 'User') ) {
+	// If you added the alias to `config/app.php` then you can access Authority, from any Controller, View, or anywhere else in your Laravel app like so:
+	if (Authority::can('create', 'User')) {
 		User::create(array(
 			'username' => 'someuser@test.com'
 		));	
 	}
 
-	//If you just chose to use the service provider, you can use the IoC container to resolve your instance
+	// If you just chose to use the service provider, you can use the IoC container to resolve your instance
 	$authority = App::make('authority');
 ```
 

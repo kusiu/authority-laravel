@@ -7,6 +7,23 @@ use Illuminate\Support\ServiceProvider;
 
 class AuthorityL5ServiceProvider extends ServiceProvider {
     
+	/**
+	 * Bootstrap any application services.
+	 *
+	 * @return void
+	 */
+    public function boot() {
+        // Publish config
+        $this->publishes([
+            __DIR__ . '/../../config/authority.php' => config_path('authority.php'),
+        ]);
+        
+        // Publish migrations
+        $this->publishes([
+            __DIR__ . '/../../migrations/' => base_path('/database/migrations')
+        ], 'migrations');
+    }
+    
     /**
      * Register the service provider.
      *
@@ -18,10 +35,10 @@ class AuthorityL5ServiceProvider extends ServiceProvider {
             
             $authority = new Authority($user);
             
-            $fn = $app['config']->get('authority.initialize', null);
+            $initialize = $app['config']->get('authority.initialize', null);
 
-            if ($fn) {
-                $fn($authority);
+            if ($initialize) {
+                $initialize($authority);
             }
 
             return $authority;
