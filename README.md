@@ -20,7 +20,7 @@ Add Authority to your composer.json file to require Authority
             "url": "https://github.com/stayallive/authority-l5"
         }
     ],
-	require : {
+	"require": {
 		"laravel/framework": "5.0.*",
         "stayallive/authority-l5" : "2.4.*"
     }
