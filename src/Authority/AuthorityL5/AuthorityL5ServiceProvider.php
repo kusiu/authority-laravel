@@ -15,7 +15,7 @@ class AuthorityL5ServiceProvider extends ServiceProvider {
     public function boot() {
         // Publish config
         $this->publishes([
-            __DIR__ . '/../../config/authority.php' => config_path('authority.php'),
+            __DIR__ . '/../../config/config.php' => config_path('authority.php'),
         ]);
         
         // Publish migrations
