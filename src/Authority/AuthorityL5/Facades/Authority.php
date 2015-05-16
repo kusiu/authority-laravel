@@ -1,10 +1,11 @@
 <?php
-namespace Authority\AuthorityL4\Facades;
+
+namespace Authority\AuthorityL5\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Authority extends Facade
-{
+class Authority extends Facade {
+    
     /**
      * Get the registered name of the component.
      *
