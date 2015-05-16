@@ -1,12 +1,10 @@
 <?php
 
-return array(
+return [
+    'initialize' => function ($authority) {
+        $user = $authority->getCurrentUser();
 
-    'initialize' => function($authority) {
-    	$user = $authority->getCurrentUser();
-    	
-        $authority->addAlias('manage', array('create', 'read', 'update', 'delete'));
-        $authority->addAlias('moderate', array('read', 'update', 'delete'));
+        $authority->addAlias('manage', ['create', 'read', 'update', 'delete']);
+        $authority->addAlias('moderate', ['read', 'update', 'delete']);
     }
-
-);
+];
