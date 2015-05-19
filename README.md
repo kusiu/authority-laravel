@@ -23,6 +23,8 @@ The last **required** step is to add the service provider to `config/app.php`
 
 Congratulations, you have successfully installed Authority.  However, we have also included some other configuration options for your convenience.
 
+For [**Laravel 4**](http://laravel.com/docs/4.2) supports, see [Authority-Laravel 2.3 branch](https://github.com/authority-php/authority-laravel/tree/2.3)
+
 ### Additional (optional) Configuration Options
 
 ##### Add the alias (facade) to your Laravel app config file.
