@@ -33,7 +33,7 @@ class AuthorityLaravelServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app['authority'] = $this->app->share(function($app) {
+        $this->app->singleton('authority', function($app) {
             $user = $app['auth']->user();
 
             $authority = new Authority($user);
